@@ -28,12 +28,3 @@ El objetivo es desarrollar una aplicación que simule un sistema de autenticaci�
 - MySQL (base de datos)
 
 ---
-
-## Estructura esperada
-- `/src` → Código fuente (PHP, HTML, CSS)  
-- `/db` → Script SQL de creación de base de datos  
-- `/docs` → Mockups, wireframes o prototipos  
-- `/video` → Elevator pitch (MP4)  
-- `README.md` → Documentación del proyecto  
-
----
