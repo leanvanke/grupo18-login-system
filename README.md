@@ -7,7 +7,7 @@ El objetivo es desarrollar una aplicación que simule un sistema de autenticaci�
 
 ---
 
-## 🚀 Funcionalidades requeridas
+## Funcionalidades requeridas
 - Registro de usuarios con validación de **ID único** y **correo electrónico único**.  
 - Login de usuario con validación de credenciales y manejo de errores.  
 - Validaciones de seguridad en la contraseña:  
@@ -22,14 +22,14 @@ El objetivo es desarrollar una aplicación que simule un sistema de autenticaci�
 
 ---
 
-## 📦 Tecnologías
+## Tecnologías
 - PHP (backend)
 - HTML, CSS (frontend)
 - MySQL (base de datos)
 
 ---
 
-## 📂 Estructura esperada
+## Estructura esperada
 - `/src` → Código fuente (PHP, HTML, CSS)  
 - `/db` → Script SQL de creación de base de datos  
 - `/docs` → Mockups, wireframes o prototipos  
