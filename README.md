@@ -28,3 +28,9 @@ El objetivo es desarrollar una aplicaci√≥n que simule un sistema de autenticaci√
 - MySQL (base de datos)
 
 ---
+
+## Integrantes
+- Leandro Van Kemenade
+- Franco Sisti
+- Emanuel Esquivel 
+- Rodrigo Franco
