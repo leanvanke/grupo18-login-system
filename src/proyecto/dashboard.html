@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard de Usuarios</h1>
+        <button id="logout-btn" class="btn-logout" onclick="window.location.href='login.html'">Cerrar Sesión</button>
+
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Buscar por usuario o email...">
+            <select id="status-filter">
+                <option value="todos">Todos</option>
+                <option value="activo">Activo</option>
+                <option value="bloqueado">Bloqueado</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <span>#</span>
+                <span>Usuario</span>
+                <span>Estado</span>
+                <span>Email</span>
+                <span>Logs</span>
+                <span>Acciones</span>
+            </div>
+            <div id="logs-container" class="table-body"></div>
+        </div>
+    </div>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
