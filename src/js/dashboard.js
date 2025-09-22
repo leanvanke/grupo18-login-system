@@ -23,7 +23,7 @@ const statusFilter = document.getElementById("status-filter");
 // === Cargar logs desde el backend ===
 async function fetchLogs() {
     try {
-        const res = await fetch("http://localhost:3000/logs");
+        const res = await fetch("../php/admin_get_users.php");
         if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
         return await res.json();
     } catch (err) {
@@ -36,7 +36,7 @@ async function fetchLogs() {
 async function updateUser(id, action) {
     try {
         logsContainer.innerHTML = `<div class="spinner">Cargando...</div>`;
-        const res = await fetch("http://localhost:3000/update_user", {
+        const res = await fetch("../php/admin_update_user.php", {
             method: "POST",
             body: new URLSearchParams({ id, action })
         });

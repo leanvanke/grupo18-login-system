@@ -54,7 +54,7 @@ $_SESSION['user'] = [
   'active' => $user['active']
 ];
 
-$logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'success','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
+$logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'login success','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
 file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 // El front espera role;
