@@ -1,7 +1,7 @@
 // === Verificar autenticación ===
 async function checkAuth() {
     try {
-        const res = await fetch("http://localhost:3000/check_session");
+        const res = await fetch("../php/check_session.php");
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         if (!data.authenticated || !data.role || data.role !== "administrador") {
