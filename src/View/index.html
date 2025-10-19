@@ -1,8 +1,8 @@
-<link rel="stylesheet" href="account.css" />
+<link rel="stylesheet" href="index.css" />
 
 <div class="account-wrap">
   <div class="account-header">
-    <h1 class="account-title">Mi cuenta</h1>
+    <h1 class="account-title">Mi Cuenta</h1>
     <p class="account-subtitle">Información básica del usuario</p>
   </div>
 
@@ -31,14 +31,10 @@
       <button id="btn-edit" class="btn" title="Próximamente" disabled>Editar perfil</button>
       <button id="btn-pass" class="btn" title="Próximamente" disabled>Cambiar contraseña</button>
 
-      <form method="post" action="../Controller/logout.php">
-        <button id="logout-btn" class="btn btn-logout" type="submit" title="Cerrar sesión">Cerrar sesión</button>
-      </form>
+      <button id="logout-btn" class="btn btn-logout" onclick="window.location.href='login.html'">Cerrar Sesión</button>
+      
     </div>
   </div>
-
-  <div class="account-footer">
-    <span>Versión 0.1 · TP</span>
-    <span id="foot-role"></span>
-  </div>
 </div>
+
+  <script src="index.js" defer></script>
