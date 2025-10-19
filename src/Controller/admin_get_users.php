@@ -9,8 +9,8 @@ if (empty($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'usuario') !== 'ad
   exit;
 }
 
-$usersFile = __DIR__ . '/../../data/users.json';
-$logsFile  = __DIR__ . '/../../data/logs.json';
+$usersFile = '../Model/users.json';
+$logsFile  = '../Model/logs.json';
 
 $users = json_decode(@file_get_contents($usersFile), true) ?: [];
 $logs  = json_decode(@file_get_contents($logsFile),  true) ?: [];

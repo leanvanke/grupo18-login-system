@@ -9,10 +9,10 @@ if (empty($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'usuario') !== 'ad
   exit;
 }
 
-$logsFile  = "../../data/logs.json";
+$logsFile  = "../Model/logs.json";
 $logs  = json_decode(@file_get_contents($logsFile), true) ?: [];
 
-$usersFile = __DIR__ . '/../../data/users.json';
+$usersFile = __DIR__ . '../Model/users.json';
 $users = json_decode(@file_get_contents($usersFile), true) ?: [];
 
 $id     = $_POST['id']     ?? '';

@@ -4,7 +4,7 @@ require __DIR__ . '/session.php';
 start_session();
 
 // Json de usuarios, momentaneo
-$usersFile = "../../data/users.json";
+$usersFile = "../Model/users.json";
 
 // Cargar usuarios
 $users = [];

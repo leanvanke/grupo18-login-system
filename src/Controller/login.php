@@ -3,8 +3,8 @@ require __DIR__ . '/session.php';
 start_session();
 
 // Json de usuarios y logs, momentaneo
-$usersFile = "../../data/users.json";
-$logsFile  = "../../data/logs.json";
+$usersFile = "../Model/users.json";
+$logsFile  = "../Model/logs.json";
 
 $users = json_decode(file_get_contents($usersFile), true) ?: [];
 $logs  = json_decode(@file_get_contents($logsFile), true) ?: [];
