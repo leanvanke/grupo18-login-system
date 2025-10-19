@@ -55,7 +55,7 @@ registerForm.addEventListener("submit", async (e) => {
     try {
         document.getElementById("register-error").textContent = "";
         document.getElementById("register-success").textContent = "Registrando...";
-        const response = await fetch("../php/register.php", { method: "POST", body: formData });
+        const response = await fetch("../Controller/register.php", { method: "POST", body: formData });
 
         if (!response.ok) {
             document.getElementById("register-error").textContent = `Error ${response.status}: ${response.statusText}`;
@@ -96,7 +96,7 @@ loginForm.addEventListener("submit", async (e) => {
 
     try {
         document.getElementById("login-error").textContent = "Iniciando sesión...";
-        const response = await fetch("../php/login.php", { method: "POST", body: formData });
+        const response = await fetch("../Controller/login.php", { method: "POST", body: formData });
 
         if (!response.ok) {
             document.getElementById("login-error").textContent = `Error ${response.status}: ${response.statusText}`;
