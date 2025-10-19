@@ -98,12 +98,18 @@ loginForm.addEventListener("submit", async (e) => {
         document.getElementById("login-error").textContent = "Iniciando sesión...";
         const response = await fetch("../Controller/login.php", { method: "POST", body: formData });
 
+        const data = await response.json();
+        
+        if (response.status === 423) {
+            document.getElementById("login-error").textContent = `Error ${response.status}: ${data.message}`;
+            return;
+        }
+
         if (!response.ok) {
             document.getElementById("login-error").textContent = `Error ${response.status}: ${response.statusText}`;
             return;
         }
 
-        const data = await response.json();
         if (data.success) {
             if (data.allowed_roles?.includes(data.role) || data.role === "administrador") {
                 window.location.href = "dashboard.html";

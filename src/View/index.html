@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="account.css" />
+
+<div class="account-wrap">
+  <div class="account-header">
+    <h1 class="account-title">Mi cuenta</h1>
+    <p class="account-subtitle">Información básica del usuario</p>
+  </div>
+
+  <div id="banner" class="notice hidden"></div>
+
+  <div class="account-body">
+    <section class="info-card">
+      <div class="info-grid">
+        <div class="info-label">ID</div>
+        <div id="f-id" class="info-value">—</div>
+
+        <div class="info-label">Email</div>
+        <div id="f-email" class="info-value">—</div>
+
+        <div class="info-label">Rol</div>
+        <div id="f-role" class="info-value">—</div>
+
+        <div class="info-label">Estado</div>
+        <div class="info-value">
+          <span id="f-state" class="pill">—</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="btn-edit" class="btn" title="Próximamente" disabled>Editar perfil</button>
+      <button id="btn-pass" class="btn" title="Próximamente" disabled>Cambiar contraseña</button>
+
+      <form method="post" action="../Controller/logout.php">
+        <button id="logout-btn" class="btn btn-logout" type="submit" title="Cerrar sesión">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="account-footer">
+    <span>Versión 0.1 · TP</span>
+    <span id="foot-role"></span>
+  </div>
+</div>

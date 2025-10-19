@@ -34,6 +34,14 @@ if (!$user) {
   json_response(['success' => false, 'message' => 'Usuario no encontrado.'], 401);
 }
 
+
+// Si el usuario existe y active === false => está bloqueado
+if ($user['active'] === false) {
+    $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_blocked','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
+    file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    json_response(['success' => false, 'message' => 'Usuario bloqueado.'], 423);
+}
+
 // Comparación simple (sin hash)
 if ($user['password'] !== $password) {
   $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'bad_password','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];

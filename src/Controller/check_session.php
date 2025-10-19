@@ -7,6 +7,7 @@ if (!empty($_SESSION['user'])) {
         'authenticated' => true,
         'id'    => $_SESSION['user']['id'],
         'email' => $_SESSION['user']['email'],
+        'active' => $_SESSION['user']['active'],
         'role'  => $_SESSION['user']['role'] ?? 'usuario'
     ]);
 } else {
