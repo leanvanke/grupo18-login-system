@@ -37,13 +37,14 @@ CREATE TABLE `logs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `usuarios` (
+CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(70) NOT NULL,
   `password` varchar(70) NOT NULL,
+  `email` varchar(70) NOT NULL,
   `role` varchar(30) NOT NULL,
   `birth_date` date NOT NULL,
   `active` tinyint(1) NOT NULL,
@@ -61,9 +62,9 @@ ALTER TABLE `logs`
   ADD KEY `fk_logs_usuario` (`id`);
 
 --
--- Indexes for table `usuarios`
+-- Indexes for table `users`
 --
-ALTER TABLE `usuarios`
+ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -71,9 +72,9 @@ ALTER TABLE `usuarios`
 --
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT for table `users`
 --
-ALTER TABLE `usuarios`
+ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -84,15 +85,15 @@ ALTER TABLE `usuarios`
 -- Constraints for table `logs`
 --
 ALTER TABLE `logs`
-  ADD CONSTRAINT `fk_logs_usuario` FOREIGN KEY (`id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_logs_usuario` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-INSERT INTO usuarios (id, name, password, role, birth_date, active, created_at)
+INSERT INTO users (id, name, email, password, role, birth_date, active, created_at)
 VALUES
-(29127, 'Leandro Van Keulen', 'Luna-2015!', 'administrador', '1990-01-01', 1, '2025-09-22 00:31:04'),
-(29, 'Usuario de Prueba', 'Luna-2015!', 'usuario', '1995-01-01', 0, '2025-09-22 00:31:04'),
-(1213, 'Leandro Van Keulen 2', 'Luna-2015!', 'usuario', '1992-05-15', 1, '2025-10-19 23:29:00');
+(29127, 'Leandro Van Keulen', 'luna-1@example.com', 'Luna-2015!', 'administrador', '1990-01-01', 1, '2025-09-22 00:31:04'),
+(29, 'Usuario de Prueba', 'luna-2@example.com', 'Luna-2015!', 'usuario', '1995-01-01', 0, '2025-09-22 00:31:04'),
+(1213, 'Leandro Van Keulen 2', 'luna-3@example.com', 'Luna-2015!', 'usuario', '1992-05-15', 1, '2025-10-19 23:29:00');

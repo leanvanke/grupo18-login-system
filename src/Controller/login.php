@@ -1,5 +1,7 @@
 <?php
 require __DIR__ . '/session.php';
+require __DIR__ . '/../Model/conexion.php';
+require __DIR__ . '/logs.php';
 
 function too_many_attempts($logs, $id, $ip) {
   $now = time(); $fails = 0;
@@ -14,11 +16,8 @@ function too_many_attempts($logs, $id, $ip) {
 
 start_session();
 
-// Json de usuarios y logs, momentaneo, Cambiar por BD
-$usersFile = "../Model/users.json";
+// Json de logs, momentáneo (se mantiene); usuarios ahora vienen de la BD
 $logsFile  = "../Model/logs.json";
-
-$users = json_decode(file_get_contents($usersFile), true) ?: [];
 $logs  = json_decode(@file_get_contents($logsFile), true) ?: [];
 
 // Solo POST
@@ -33,56 +32,55 @@ if ($id === '' || $password === '') {
   json_response(['success' => false, 'message' => 'Completa todos los campos.'], 400);
 }
 
-
 if (too_many_attempts($logs, $id, $_SERVER['REMOTE_ADDR'] ?? '')) {
   json_response(['success'=>false,'message'=>'Demasiados intentos. Probá en unos minutos.'], 429);
 }
 
-// Buscar usuario por id
-$user = null;
-foreach ($users as $u) {
-  if ($u['id'] === $id) { $user = $u; break; }
+// ====== CAMBIO: buscar usuario por ID en la BD (en lugar de users.json) ======
+try {
+  $stmt = $pdo->prepare("SELECT id, email, password, role, active FROM users WHERE id = :id LIMIT 1");
+  $stmt->execute([':id' => $id]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (Throwable $e) {
+  // Error de servidor al consultar usuario
+  json_response(['success' => false, 'message' => 'Error de servidor al consultar usuario.'], 500);
 }
 
 if (!$user) {
   // Log intento fallido
-  $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_not_found','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-  file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+  add_log($pdo, $id, 'user_not_found');
   json_response(['success' => false, 'message' => 'Usuario no encontrado.'], 401);
 }
 
+// ====== CAMBIO: interpretar 'active' desde la BD (1=activo, otro= bloqueado) ======
+$isActive = (int)($user['active'] ?? 0) === 1;
 
-// Si el usuario existe y active === false => está bloqueado
-if ($user['active'] === false) {
-    $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_blocked','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-    file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    json_response(['success' => false, 'message' => 'Usuario bloqueado.'], 423);
+// Si el usuario existe y NO está activo => está bloqueado (misma semántica que antes)
+if (!$isActive) {
+  add_log($pdo, $id, 'user_blocked');
+  json_response(['success' => false, 'message' => 'Usuario bloqueado.'], 423);
 }
 
-$valid = ($user['password'] === $password) || password_verify($password, $user['password']);
+// Comparación simple (soporta hash y texto plano para compatibilidad)
+$storedPass = (string)($user['password'] ?? '');
+$hasHash = password_get_info($storedPass)['algo'] !== 0;
+$valid = $hasHash ? password_verify($password, $storedPass) : ($storedPass === $password);
 
 if (!$valid) {
-  $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'bad_password','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-  file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+  add_log($pdo, $id, 'bad_password');
   json_response(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
 }
 
-// OK: crear sesión
-// $_SESSION['user'] contiene los datos del usuario autenticado:
-// - id: string, identificador único del usuario
-// - email: string, correo electrónico del usuario
-// - role: string, "usuario" o "administrador"
-// - active: bool/int, indica si el usuario está activo
+// OK: crear sesión (igual que antes)
 $_SESSION['user'] = [
-  'id' => $user['id'],
-  'email' => $user['email'],
-  'role' => $user['role'],            // "usuario" o "administrador"
-  'active' => $user['active']
+  'id'     => $user['id'],
+  'email'  => $user['email'],
+  'role'   => $user['role'],  // "usuario" o "administrador"
+  'active' => $isActive
 ];
 session_regenerate_id(true);
 
-$logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'login success','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+add_log($pdo, $id, 'login success');
 
 // El front espera role;
 json_response([

@@ -1,59 +1,96 @@
 <?php
-session_start();
-header('Content-Type: application/json; charset=utf-8');
+// src/Controller/admin_update_user.php
+declare(strict_types=1);
 
-// Solo admin
-if (empty($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'usuario') !== 'administrador') {
-  http_response_code(403);
-  echo json_encode(['success'=>false,'message'=>'No autorizado']);
+// === Forzar JSON y capturar errores/warnings como JSON ===
+ob_start();
+header('Content-Type: application/json; charset=utf-8');
+ini_set('display_errors', '0');
+
+set_error_handler(function($sev, $msg, $file, $line) {
+  http_response_code(500);
+  @ob_clean();
+  echo json_encode(['success'=>false,'message'=>'PHP error','detail'=>"$msg @ $file:$line"], JSON_UNESCAPED_UNICODE);
   exit;
+});
+register_shutdown_function(function(){
+  $e = error_get_last();
+  if ($e && in_array($e['type'], [E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR], true)) {
+    http_response_code(500);
+    @ob_clean();
+    echo json_encode(['success'=>false,'message'=>'Fatal error','detail'=>$e['message']], JSON_UNESCAPED_UNICODE);
+  }
+});
+
+require __DIR__ . '/session.php';
+start_session();
+
+
+// --- Guard admin ---
+if (empty($_SESSION['user']) || (($_SESSION['user']['role'] ?? 'usuario') !== 'administrador')) {
+  json_response(['success'=>false,'message'=>'No autorizado'], 403);
 }
 
-$logsFile  = "../Model/logs.json";
-$logs  = json_decode(@file_get_contents($logsFile), true) ?: [];
-
-$usersFile = __DIR__ . '../Model/users.json';
-$users = json_decode(@file_get_contents($usersFile), true) ?: [];
+require __DIR__ . '/../Model/conexion.php';
 
 $id     = $_POST['id']     ?? '';
 $action = $_POST['action'] ?? '';
-
 if ($id === '' || $action === '') {
-  http_response_code(400);
-  echo json_encode(['success'=>false,'message'=>'Parámetros faltantes']);
-  exit;
+  json_response(['success'=>false,'message'=>'Parámetros faltantes'], 400);
+}
+if (!in_array($action, ['block','unblock','delete'], true)) {
+  json_response(['success'=>false,'message'=>'Acción inválida'], 400);
 }
 
-$found = false;
-foreach ($users as $i => $u) {
-  if ($u['id'] === $id) {
-    $found = true;
-    if ($action === 'block') {
-      $users[$i]['active'] = false;
-        $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_blocked','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-        file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    } elseif ($action === 'unblock') {
-        $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_unblocked','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-        file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-      $users[$i]['active'] = true;
-    } elseif ($action === 'delete') {
-        $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'user_deleted','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
-        file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-      array_splice($users, $i, 1);
-    } else {
-      http_response_code(400);
-      echo json_encode(['success'=>false,'message'=>'Acción inválida']);
-      exit;
+// Buscar usuario destino
+$stmt = $pdo->prepare("SELECT id, role, active FROM users WHERE id = :id LIMIT 1");
+$stmt->execute([':id'=>$id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$user) json_response(['success'=>false,'message'=>'Usuario no encontrado'], 404);
+
+// Reglas
+$actorId = $_SESSION['user']['id'] ?? '';
+if (($user['role'] ?? '') === 'administrador') {
+  json_response(['success'=>false,'message'=>'No se puede modificar un administrador'], 403);
+}
+if ($id === $actorId && ($action === 'block' || $action === 'delete')) {
+  json_response(['success'=>false,'message'=>'No podés realizar esa acción sobre tu propio usuario'], 403);
+}
+
+// Helper logs (usa tu tabla logs: id = id de usuario)
+function add_log(PDO $pdo, $userId, string $result): void {
+  $stmt = $pdo->prepare("INSERT INTO logs (`id`, `result`, `ip`) VALUES (:uid, :result, :ip)");
+  $stmt->execute([
+    ':uid'    => $userId,
+    ':result' => $result,
+    ':ip'     => $_SERVER['REMOTE_ADDR'] ?? '',
+  ]);
+}
+
+// Ejecutar acción
+switch ($action) {
+  case 'block':
+    if ((int)$user['active'] !== 0) {
+      $upd = $pdo->prepare("UPDATE users SET active = 0 WHERE id = :id");
+      $upd->execute([':id'=>$id]);
     }
-    break;
-  }
+    add_log($pdo, $id, 'user_blocked');
+    json_response(['success'=>true,'message'=>'Usuario bloqueado']);
+
+  case 'unblock':
+    if ((int)$user['active'] !== 1) {
+      $upd = $pdo->prepare("UPDATE users SET active = 1 WHERE id = :id");
+      $upd->execute([':id'=>$id]);
+    }
+    add_log($pdo, $id, 'user_unblocked');
+    json_response(['success'=>true,'message'=>'Usuario desbloqueado']);
+
+  case 'delete':
+    $del = $pdo->prepare("DELETE FROM users WHERE id = :id");
+    $del->execute([':id'=>$id]);
+    add_log($pdo, $id, 'user_deleted');
+    json_response(['success'=>true,'message'=>'Usuario eliminado']);
 }
 
-if (!$found) {
-  http_response_code(404);
-  echo json_encode(['success'=>false,'message'=>'Usuario no encontrado']);
-  exit;
-}
-
-file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
-echo json_encode(['success'=>true]);
+// fallback
+json_response(['success'=>false,'message'=>'Acción no ejecutada'], 400);
