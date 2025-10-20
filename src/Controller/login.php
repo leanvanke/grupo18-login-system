@@ -38,7 +38,7 @@ if (too_many_attempts($logs, $id, $_SERVER['REMOTE_ADDR'] ?? '')) {
 
 // ====== CAMBIO: buscar usuario por ID en la BD (en lugar de users.json) ======
 try {
-  $stmt = $pdo->prepare("SELECT id, email, password, role, active FROM users WHERE id = :id LIMIT 1");
+  $stmt = $pdo->prepare("SELECT id, name, email, password, role, birth_date, active FROM users WHERE id = :id LIMIT 1");
   $stmt->execute([':id' => $id]);
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {
@@ -73,10 +73,12 @@ if (!$valid) {
 
 // OK: crear sesión (igual que antes)
 $_SESSION['user'] = [
-  'id'     => $user['id'],
-  'email'  => $user['email'],
-  'role'   => $user['role'],  // "usuario" o "administrador"
-  'active' => $isActive
+  'id'         => $user['id'],
+  'name'       => $user['name'] ?? null,
+  'email'      => $user['email'],
+  'role'       => $user['role'],  // "usuario" o "administrador"
+  'birth_date' => $user['birth_date'] ?? null,
+  'active'     => $isActive
 ];
 session_regenerate_id(true);
 

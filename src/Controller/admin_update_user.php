@@ -32,6 +32,7 @@ if (empty($_SESSION['user']) || (($_SESSION['user']['role'] ?? 'usuario') !== 'a
 }
 
 require __DIR__ . '/../Model/conexion.php';
+require __DIR__ . '/logs.php';
 
 $id     = $_POST['id']     ?? '';
 $action = $_POST['action'] ?? '';
@@ -57,15 +58,6 @@ if ($id === $actorId && ($action === 'block' || $action === 'delete')) {
   json_response(['success'=>false,'message'=>'No podés realizar esa acción sobre tu propio usuario'], 403);
 }
 
-// Helper logs (usa tu tabla logs: id = id de usuario)
-function add_log(PDO $pdo, $userId, string $result): void {
-  $stmt = $pdo->prepare("INSERT INTO logs (`id`, `result`, `ip`) VALUES (:uid, :result, :ip)");
-  $stmt->execute([
-    ':uid'    => $userId,
-    ':result' => $result,
-    ':ip'     => $_SERVER['REMOTE_ADDR'] ?? '',
-  ]);
-}
 
 // Ejecutar acción
 switch ($action) {
