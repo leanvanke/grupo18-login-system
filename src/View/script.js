@@ -106,7 +106,7 @@ loginForm.addEventListener("submit", async (e) => {
         }
 
         if (!response.ok) {
-            document.getElementById("login-error").textContent = `Error ${response.status}: ${response.statusText}`;
+            document.getElementById("login-error").textContent = `Error ${response.status}: ${data.message}`;
             return;
         }
 

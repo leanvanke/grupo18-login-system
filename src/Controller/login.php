@@ -1,8 +1,20 @@
 <?php
 require __DIR__ . '/session.php';
+
+function too_many_attempts($logs, $id, $ip) {
+  $now = time(); $fails = 0;
+  foreach (array_reverse($logs) as $ev) {
+    if (strtotime($ev['ts']) < $now - 600) break; // últimos 10 min
+    if ($ev['result'] === 'bad_password' || $ev['result'] === 'user_not_found') {
+      if ($ev['id'] === $id || ($ev['ip'] ?? '') === $ip) $fails++;
+    }
+  }
+  return $fails >= 5;
+}
+
 start_session();
 
-// Json de usuarios y logs, momentaneo
+// Json de usuarios y logs, momentaneo, Cambiar por BD
 $usersFile = "../Model/users.json";
 $logsFile  = "../Model/logs.json";
 
@@ -19,6 +31,11 @@ $password = $_POST['password'] ?? '';
 
 if ($id === '' || $password === '') {
   json_response(['success' => false, 'message' => 'Completa todos los campos.'], 400);
+}
+
+
+if (too_many_attempts($logs, $id, $_SERVER['REMOTE_ADDR'] ?? '')) {
+  json_response(['success'=>false,'message'=>'Demasiados intentos. Probá en unos minutos.'], 429);
 }
 
 // Buscar usuario por id
@@ -42,8 +59,9 @@ if ($user['active'] === false) {
     json_response(['success' => false, 'message' => 'Usuario bloqueado.'], 423);
 }
 
-// Comparación simple (sin hash)
-if ($user['password'] !== $password) {
+$valid = ($user['password'] === $password) || password_verify($password, $user['password']);
+
+if (!$valid) {
   $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'bad_password','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
   file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
   json_response(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
@@ -61,6 +79,7 @@ $_SESSION['user'] = [
   'role' => $user['role'],            // "usuario" o "administrador"
   'active' => $user['active']
 ];
+session_regenerate_id(true);
 
 $logs[] = ['ts'=>date('Y-m-d H:i:s'),'id'=>$id,'result'=>'login success','ip'=>$_SERVER['REMOTE_ADDR'] ?? ''];
 file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
