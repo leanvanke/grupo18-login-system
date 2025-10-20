@@ -260,7 +260,8 @@ body{
   justify-content: flex-end;
 }
 
-.pass-message{
+.pass-message,
+.profile-message{
   margin: 0;
   font-weight: 600;
   padding: 10px 12px;
@@ -268,13 +269,15 @@ body{
   border: 1px solid transparent;
 }
 
-.pass-message--ok{
+.pass-message--ok,
+.profile-message--ok{
   background: var(--success-bg);
   color: var(--success-ink);
   border-color: #b3ffce;
 }
 
-.pass-message--error{
+.pass-message--error,
+.profile-message--error{
   background: var(--warn-bg);
   color: var(--warn-ink);
   border-color: #ffe08a;

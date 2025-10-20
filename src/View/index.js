@@ -1,4 +1,10 @@
 
+let profileState = {
+  email: "",
+  name: "",
+  birth_date: "",
+};
+
 async function loadSession() {
   try {
     const res = await fetch("../Controller/check_session.php", { cache: "no-store" });
@@ -19,9 +25,15 @@ async function loadSession() {
 
     // Poblar campos
     setText("f-id", data.id ?? "—");
-    setInput("f-email", data.email ?? "");
-    setInput("f-name", data.name ?? "");
-    setInput("f-birth", data.birth_date ?? "");
+    profileState = {
+      email: data.email ?? "",
+      name: data.name ?? "",
+      birth_date: data.birth_date ?? "",
+    };
+
+    setInput("f-email", profileState.email);
+    setInput("f-name", profileState.name);
+    setInput("f-birth", profileState.birth_date);
     setText("f-role", data.role ?? "usuario");
 
     // Estado
@@ -79,18 +91,146 @@ function disable(id) {
 }
 
 function setupEditProfile() {
-  const btn = byId("btn-edit");
-  if (!btn) return;
-  const editableIds = ["f-email", "f-name", "f-birth"];
-  btn.addEventListener("click", () => {
-    editableIds.forEach((id, index) => {
+  const editBtn = byId("btn-edit");
+  const cancelBtn = byId("btn-cancel-edit");
+  const messageEl = byId("profile-message");
+  if (!editBtn) return;
+
+  const fields = [
+    { id: "f-email", name: "email" },
+    { id: "f-name", name: "name" },
+    { id: "f-birth", name: "birth_date" },
+  ];
+
+  let editing = false;
+
+  const setInputsDisabled = (disabled) => {
+    fields.forEach(({ id }) => {
       const input = byId(id);
       if (input && "disabled" in input) {
-        input.disabled = false;
-        if (index === 0) input.focus();
+        input.disabled = disabled;
       }
-    });
-    btn.disabled = true;
+    }); 
+  };
+
+  const restoreValues = () => {
+    setInput("f-email", profileState.email ?? "");
+    setInput("f-name", profileState.name ?? "");
+    setInput("f-birth", profileState.birth_date ?? "");
+  };
+
+  const showMessage = (msg, ok = true) => {
+    if (!messageEl) return;
+    messageEl.textContent = msg;
+    messageEl.classList.remove(
+      "hidden",
+      "profile-message--ok",
+      "profile-message--error"
+    );
+    if (!msg) {
+      messageEl.classList.add("hidden");
+      return;
+    }
+    messageEl.classList.add(ok ? "profile-message--ok" : "profile-message--error");
+  };
+
+  const setEditing = (active) => {
+    editing = active;
+    setInputsDisabled(!active);
+    if (active) {
+      editBtn.textContent = "Guardar cambios";
+      cancelBtn?.classList.remove("hidden");
+      cancelBtn?.removeAttribute("disabled");
+      const firstInput = byId(fields[0].id);
+      firstInput?.focus();
+      firstInput?.select?.();
+    } else {
+      editBtn.textContent = "Editar perfil";
+      cancelBtn?.classList.add("hidden");
+      cancelBtn?.removeAttribute("disabled");
+    }
+  };
+
+  setInputsDisabled(true);
+
+  editBtn.addEventListener("click", async () => {
+    if (!editing) {
+      showMessage("", true);
+      setEditing(true);
+      return;
+    }
+
+    const values = fields.reduce((acc, { id, name }) => {
+      const input = byId(id);
+      acc[name] = (input?.value ?? "").trim();
+      return acc;
+    }, {});
+
+    if (!values.email || !values.name) {
+      showMessage("Completá el email y el nombre.", false);
+      setInputsDisabled(false);
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(values.email)) {
+      showMessage("Ingresá un email válido.", false);
+      setInputsDisabled(false);
+      return;
+    }
+
+    const birth = values.birth_date;
+    if (birth && !/^\d{4}-\d{2}-\d{2}$/.test(birth)) {
+      showMessage(
+        "Ingresá una fecha de nacimiento válida (AAAA-MM-DD).",
+        false
+      );
+      setInputsDisabled(false);
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append("email", values.email);
+    payload.append("name", values.name);
+    payload.append("birth_date", birth);
+
+    showMessage("Guardando cambios…", true);
+    editBtn.disabled = true;
+    cancelBtn?.setAttribute("disabled", "true");
+    setInputsDisabled(true);
+
+    try {
+      const res = await fetch("../Controller/update_profile.php", {
+        method: "POST",
+        body: payload,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "No se pudieron guardar los cambios.");
+      }
+
+      profileState = {
+        email: data.profile?.email ?? values.email,
+        name: data.profile?.name ?? values.name,
+        birth_date: data.profile?.birth_date ?? birth,
+      };
+
+      restoreValues();
+      showMessage(data.message || "Perfil actualizado correctamente.", true);
+      setEditing(false);
+    } catch (err) {
+      showMessage(err.message || "Error inesperado al actualizar el perfil.", false);
+      setInputsDisabled(false);
+    } finally {
+      editBtn.disabled = false;
+      cancelBtn?.removeAttribute("disabled");
+    }
+  });
+
+  cancelBtn?.addEventListener("click", () => {
+    restoreValues();
+    showMessage("", true);
+    setEditing(false);
   });
 }
 /* init */
@@ -142,13 +282,14 @@ function setupChangePassword() {
 
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
+    const payload = new FormData(form);
     showMessage("Procesando…", true);
     disableForm(true);
 
     try {
       const res = await fetch("../Controller/update_password.php", {
         method: "POST",
-        body: new FormData(form),
+        body: payload,
       });
 
       const data = await res.json().catch(() => ({}));

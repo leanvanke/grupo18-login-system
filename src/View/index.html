@@ -58,12 +58,14 @@
     </section>
 
     <div class="actions">
-      <button id="btn-edit" class="btn">Editar perfil</button>
-      <button id="btn-pass" class="btn" type="button" title="Cambiar contraseña">Cambiar contraseña</button>
+      <button id="btn-edit" class="btn" type="button">Editar perfil</button>
+      <button id="btn-cancel-edit" class="btn hidden" type="button">Cancelar</button>
 
       <button id="logout-btn" class="btn btn-logout" onclick="window.location.href='login.html'">Cerrar Sesión</button>
 
     </div>
+
+    <p id="profile-message" class="profile-message hidden"></p>
 
     <form id="change-pass-form" class="password-form hidden" method="post">
       <h2 class="password-form__title">Actualizar contraseña</h2>
