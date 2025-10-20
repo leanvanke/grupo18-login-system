@@ -48,13 +48,14 @@ INSERT INTO `logs` (`id_log`, `id_usuario`, `accion`, `fecha`) VALUES
 --
 
 CREATE TABLE `usuarios` (
-  `id_usuario` int(11) NOT NULL,
+  `id` int(11) NOT NULL, PRIMARY KEY,
   `nombre` varchar(70) NOT NULL,
   `contraseña` varchar(255) NOT NULL,
   `correo` varchar(70) NOT NULL,
   `fecha_nacimiento` date NOT NULL,
   `es_administrador` tinyint(1) NOT NULL,
-  `cuenta_activa` tinyint(1) NOT NULL
+  `active` tinyint(1) NOT NULL
+   `active` (1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -62,8 +63,33 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `contraseña`, `correo`, `fecha_nacimiento`, `es_administrador`, `cuenta_activa`) VALUES
-(1, 'TomasJugo', 'tomielbarto', 'tomielbarto@gmail.com', '2019-09-11', 0, 1);
+(29127, 'Leandro', 'seguro123', 'leanvanke@gmail.com', '2019-09-11', 0, 1);
 
+
+/*    {
+        "id": "29127",
+        "email": "leanvanke@gmail.com",
+        "password": "Luna-2015!",
+        "role": "administrador",
+        "created_at": "2025-09-22 00:31:04",
+        "active": true
+    },
+    {
+        "id": "29",
+        "email": "test@gmail.com",
+        "password": "Luna-2015!",
+        "role": "usuario",
+        "created_at": "2025-09-22 00:31:04",
+        "active": false
+    },
+    {
+        "id": "1213",
+        "email": "leanvanke2@gmail.com",
+        "password": "Luna-2015!",
+        "role": "usuario",
+        "created_at": "2025-10-19 23:29:00",
+        "active": true
+    }*/
 --
 -- Índices para tablas volcadas
 --
