@@ -43,7 +43,7 @@ CREATE TABLE `logs` (
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(70) NOT NULL,
-  `password` varchar(70) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `email` varchar(70) NOT NULL,
   `role` varchar(30) NOT NULL,
   `birth_date` date NOT NULL,

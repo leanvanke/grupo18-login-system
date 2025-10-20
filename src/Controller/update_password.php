@@ -3,6 +3,40 @@ require __DIR__ . '/session.php';
 require __DIR__ . '/../Model/conexion.php';
 require __DIR__ . '/logs.php';
 
+function ensure_password_column_capacity(PDO $pdo, int $expectedLength): void
+{
+  $minLength = max($expectedLength, 72); // bcrypt usa 60, dejamos margen
+
+  try {
+    $dbStmt = $pdo->query('SELECT DATABASE() AS db');
+    $schema = (string)($dbStmt->fetchColumn() ?? '');
+    if ($schema === '') {
+      return;
+    }
+
+    $info = $pdo->prepare(
+      'SELECT CHARACTER_MAXIMUM_LENGTH
+         FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = :schema
+          AND TABLE_NAME = :table
+          AND COLUMN_NAME = :column
+        LIMIT 1'
+    );
+    $info->execute([
+      ':schema' => $schema,
+      ':table' => 'users',
+      ':column' => 'password',
+    ]);
+
+    $maxLen = (int)($info->fetchColumn() ?? 0);
+    if ($maxLen > 0 && $maxLen < $minLength) {
+      $pdo->exec('ALTER TABLE `users` MODIFY `password` VARCHAR(255) NOT NULL');
+    }
+  } catch (Throwable $e) {
+    // Silencioso: si falla, continuamos con la validación posterior
+  }
+}
+
 start_session();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -54,13 +88,38 @@ if (!$valid) {
 
 $newHash = password_hash($new, PASSWORD_DEFAULT);
 
+ensure_password_column_capacity($pdo, strlen($newHash));
+
 try {
+    $pdo->beginTransaction();
+
   $stmt = $pdo->prepare('UPDATE users SET password = :password WHERE id = :id');
   $stmt->execute([
     ':password' => $newHash,
     ':id' => $userId,
   ]);
+  $check = $pdo->prepare('SELECT password FROM users WHERE id = :id LIMIT 1');
+  $check->execute([':id' => $userId]);
+  $savedPass = (string)($check->fetchColumn() ?? '');
+
+  if ($savedPass === '') {
+    $pdo->rollBack();
+    json_response(['success' => false, 'message' => 'No se pudo verificar la contraseña actualizada.'], 500);
+  }
+
+  if (!password_verify($new, $savedPass)) {
+    $pdo->rollBack();
+    json_response([
+      'success' => false,
+      'message' => 'No se pudo guardar la nueva contraseña. Verificá la configuración de la base de datos.',
+    ], 500);
+  }
+
+  $pdo->commit();
 } catch (Throwable $e) {
+  if ($pdo->inTransaction()) {
+    $pdo->rollBack();
+  }
   json_response(['success' => false, 'message' => 'No se pudo actualizar la contraseña.'], 500);
 }
 

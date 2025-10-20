@@ -282,3 +282,5 @@ body{
   color: var(--warn-ink);
   border-color: #ffe08a;
 }
+
+.hidden { display: none; }

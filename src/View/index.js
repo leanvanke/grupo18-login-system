@@ -241,42 +241,48 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function setupChangePassword() {
-  const form = byId("change-pass-form");
-  const toggleBtn = byId("btn-pass");
-  const cancelBtn = byId("cancel-pass");
-  const messageEl = byId("pass-message");
-
+  const form = document.getElementById("change-pass-form");
+  const toggleBtn = document.getElementById("btn-pass");
+  const cancelBtn = document.getElementById("cancel-pass");
+  const messageEl = document.getElementById("pass-message");
   if (!form || !toggleBtn) return;
 
+  const defaultLabel = (toggleBtn.textContent || "¿Cambiar contraseña?").trim();
+  const openLabel = "Ocultar cambio de contraseña";
+
+  const setExpanded = (expanded) => {
+    toggleBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+    toggleBtn.textContent = expanded ? openLabel : defaultLabel;
+  };
+
+  toggleBtn.setAttribute("aria-controls", "change-pass-form");
+  form.classList.add("hidden");
+  setExpanded(false);
+
   const disableForm = (disabled) => {
-    [...form.elements].forEach((el) => {
-      if ("disabled" in el) el.disabled = disabled;
-    });
+    [...form.elements].forEach((el) => { if ("disabled" in el) el.disabled = disabled; });
     toggleBtn.disabled = disabled;
   };
 
-  const showMessage = (msg, ok) => {
+  const showMessage = (msg, ok = true) => {
     if (!messageEl) return;
     messageEl.textContent = msg;
     messageEl.classList.remove("hidden", "pass-message--ok", "pass-message--error");
-    if (!msg) {
-      messageEl.classList.add("hidden");
-      return;
-    }
+    if (!msg) { messageEl.classList.add("hidden"); return; }
     messageEl.classList.add(ok ? "pass-message--ok" : "pass-message--error");
   };
 
   toggleBtn.addEventListener("click", () => {
-    form.classList.toggle("hidden");
+    const isHidden = form.classList.toggle("hidden");
+    setExpanded(!isHidden);
     showMessage("", true);
-    if (!form.classList.contains("hidden")) {
-      form.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    if (!isHidden) form.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 
   cancelBtn?.addEventListener("click", () => {
     form.reset();
     form.classList.add("hidden");
+    setExpanded(false);
     showMessage("", true);
   });
 
@@ -285,20 +291,15 @@ function setupChangePassword() {
     const payload = new FormData(form);
     showMessage("Procesando…", true);
     disableForm(true);
-
     try {
-      const res = await fetch("../Controller/update_password.php", {
-        method: "POST",
-        body: payload,
-      });
-
+      const res = await fetch("../Controller/update_password.php", { method: "POST", body: payload });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data?.success) {
-        throw new Error(data?.message || "No se pudo actualizar la contraseña.");
-      }
+      if (!res.ok || !data?.success) throw new Error(data?.message || "No se pudo actualizar la contraseña.");
 
       showMessage(data.message || "Contraseña actualizada correctamente.", true);
       form.reset();
+      form.classList.add("hidden");
+      setExpanded(false);
     } catch (err) {
       showMessage(err.message || "Error inesperado.", false);
     } finally {
