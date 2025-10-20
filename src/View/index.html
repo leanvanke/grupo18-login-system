@@ -29,12 +29,39 @@
 
     <div class="actions">
       <button id="btn-edit" class="btn" title="Próximamente" disabled>Editar perfil</button>
-      <button id="btn-pass" class="btn" title="Próximamente" disabled>Cambiar contraseña</button>
+      <button id="btn-pass" class="btn" type="button" title="Cambiar contraseña">Cambiar contraseña</button>
 
       <button id="logout-btn" class="btn btn-logout" onclick="window.location.href='login.html'">Cerrar Sesión</button>
-      
+
     </div>
+
+    <form id="change-pass-form" class="password-form hidden" method="post">
+      <h2 class="password-form__title">Actualizar contraseña</h2>
+      <p class="password-form__help">Por seguridad necesitás tu contraseña actual.</p>
+
+      <label class="password-form__field">
+        <span>Contraseña actual</span>
+        <input type="password" name="current_password" required minlength="4" autocomplete="current-password" />
+      </label>
+
+      <label class="password-form__field">
+        <span>Nueva contraseña</span>
+        <input type="password" name="new_password" required minlength="8" autocomplete="new-password" />
+      </label>
+
+      <label class="password-form__field">
+        <span>Confirmar contraseña</span>
+        <input type="password" name="confirm_password" required minlength="8" autocomplete="new-password" />
+      </label>
+
+      <div class="password-form__actions">
+        <button id="cancel-pass" class="btn" type="button">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar contraseña</button>
+      </div>
+
+      <p id="pass-message" class="pass-message hidden"></p>
+    </form>
   </div>
 </div>
 
-  <script src="index.js" defer></script>
+<script src="index.js" defer></script>

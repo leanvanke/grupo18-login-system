@@ -29,6 +29,12 @@ async function loadSession() {
     stateEl.classList.remove("pill--active", "pill--blocked");
     stateEl.classList.add(isActive ? "pill--active" : "pill--blocked");
 
+    const passBtn = byId("btn-pass");
+    if (passBtn) {
+      passBtn.disabled = !isActive;
+      passBtn.title = isActive ? "Cambiar contraseña" : "Usuario bloqueado";
+    }
+
     // Banner
     const banner = byId("banner");
     banner.classList.remove("hidden", "notice--ok", "notice--warn");
@@ -56,4 +62,73 @@ function setText(id, txt) { const el = byId(id); if (el) el.textContent = txt; }
 function disable(id) { const el = byId(id); if (el) el.disabled = true; }
 
 /* init */
-document.addEventListener("DOMContentLoaded", loadSession);
+document.addEventListener("DOMContentLoaded", () => {
+  loadSession();
+  setupChangePassword();
+});
+
+function setupChangePassword() {
+  const form = byId("change-pass-form");
+  const toggleBtn = byId("btn-pass");
+  const cancelBtn = byId("cancel-pass");
+  const messageEl = byId("pass-message");
+
+  if (!form || !toggleBtn) return;
+
+  const disableForm = (disabled) => {
+    [...form.elements].forEach((el) => {
+      if ("disabled" in el) el.disabled = disabled;
+    });
+    toggleBtn.disabled = disabled;
+  };
+
+  const showMessage = (msg, ok) => {
+    if (!messageEl) return;
+    messageEl.textContent = msg;
+    messageEl.classList.remove("hidden", "pass-message--ok", "pass-message--error");
+    if (!msg) {
+      messageEl.classList.add("hidden");
+      return;
+    }
+    messageEl.classList.add(ok ? "pass-message--ok" : "pass-message--error");
+  };
+
+  toggleBtn.addEventListener("click", () => {
+    form.classList.toggle("hidden");
+    showMessage("", true);
+    if (!form.classList.contains("hidden")) {
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
+  cancelBtn?.addEventListener("click", () => {
+    form.reset();
+    form.classList.add("hidden");
+    showMessage("", true);
+  });
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    showMessage("Procesando…", true);
+    disableForm(true);
+
+    try {
+      const res = await fetch("../Controller/update_password.php", {
+        method: "POST",
+        body: new FormData(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "No se pudo actualizar la contraseña.");
+      }
+
+      showMessage(data.message || "Contraseña actualizada correctamente.", true);
+      form.reset();
+    } catch (err) {
+      showMessage(err.message || "Error inesperado.", false);
+    } finally {
+      disableForm(false);
+    }
+  });
+}
