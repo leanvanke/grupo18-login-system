@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id       = trim($_POST['id'] ?? '');
 $email    = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
-$role     = $_POST['role'] ?? 'usuario'; // coincide con <select> del front
+$role     = $_POST['role'] ?? 'usuario'; 
 
 // Validaciones simples
 if ($id === '' || $email === '' || $password === '' || $role === '') {
@@ -46,11 +46,12 @@ foreach ($users as $u) {
   }
 }
 
-// Guardar usuario (sin hash)
+
+$hash = password_hash($password, PASSWORD_DEFAULT);
 $users[] = [
   'id' => $id,
   'email' => $email,
-  'password' => $password,  
+  'password' => $hash,
   'role' => $role,          // "usuario" | "administrador" 
   'created_at' => date('Y-m-d H:i:s'),
   'active' => true

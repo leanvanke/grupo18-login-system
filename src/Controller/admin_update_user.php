@@ -1,8 +1,8 @@
 <?php
-// src/php/admin_update_user.php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
+// Solo admin
 if (empty($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'usuario') !== 'administrador') {
   http_response_code(403);
   echo json_encode(['success'=>false,'message'=>'No autorizado']);
