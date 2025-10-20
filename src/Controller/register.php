@@ -71,7 +71,12 @@ try {
     json_response(['success' => false, 'message' => 'No se pudo registrar el usuario.'], 500);
   }
 
-add_log($pdo, $id, 'register success');
+  add_log($pdo, $id, 'register success');
+
+  json_response([
+    'success' => true,
+    'message' => 'Usuario registrado correctamente.'
+  ]);
 
 } catch (PDOException $e) {
   // Si tenés UNIQUE en BD y cae aquí por duplicados
