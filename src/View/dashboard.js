@@ -40,14 +40,30 @@ async function updateUser(id, action) {
             method: "POST",
             body: new URLSearchParams({ id, action })
         });
-        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
-        const data = await res.json();
-        if (!data.success) {
-            logsContainer.innerHTML = `<div class="error">Error al ejecutar la acción: ${data.message || "Desconocido"}</div>`;
+    
+        let data;
+        try {
+            data = await res.json();
+        } catch (parseErr) {
+            data = null;
+        }
+
+        if (!res.ok) {
+            const message = data && data.message ? data.message : `Error ${res.status}: ${res.statusText}`;
+            logsContainer.innerHTML = `<div class="error">${message}</div>`;
             setTimeout(() => renderLogs(), 2000);
             return false;
         }
-        logsContainer.innerHTML = `<div class="success">Acción realizada con éxito: ${action}</div>`;
+        
+        if (!data || !data.success) {
+            const message = data && data.message ? data.message : "Error al ejecutar la acción";
+            logsContainer.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => renderLogs(), 2000);
+            return false;
+        }
+
+        const successMessage = data.message ? data.message : `Acción realizada con éxito: ${action}`;
+        logsContainer.innerHTML = `<div class="success">${successMessage}</div>`;
         setTimeout(() => renderLogs(), 2000);
         return true;
     } catch (err) {
