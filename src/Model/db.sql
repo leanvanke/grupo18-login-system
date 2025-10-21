@@ -94,6 +94,6 @@ COMMIT;
 
 INSERT INTO users (id, name, email, password, role, birth_date, active, created_at)
 VALUES
-(29127, 'Admin', 'jorge32@gmail.com', 'contraseña123', 'administrador', '1990-01-01', 1, '2025-09-22 00:31:04'),
-(29, 'Juan Perez', 'jperez33@gmail.com', 'contraseña123', 'usuario', '1995-01-01', 0, '2025-09-22 00:31:04'),
-(1213, 'Leandro gonzales', 'l.gonzales546@gmail.com', 'contraseña123', 'usuario', '1992-05-15', 1, '2025-10-19 23:29:00');
+(1, 'Admin', 'jorge32@gmail.com', 'Contraseña123!', 'administrador', '1990-01-01', 1, '2025-09-22 00:31:04'),
+(2, 'Juan Perez', 'jperez33@gmail.com', 'Contraseña123!', 'usuario', '1995-01-01', 0, '2025-09-22 00:31:04'),
+(3, 'Leandro gonzales', 'l.gonzales546@gmail.com', 'Contraseña123!', 'usuario', '1992-05-15', 1, '2025-10-19 23:29:00');
