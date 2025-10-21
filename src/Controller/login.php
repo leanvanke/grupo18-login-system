@@ -28,6 +28,8 @@ if ($id === '' || $password === '') {
   json_response(['success' => false, 'message' => 'Completa todos los campos.'], 400);
 }
 
+$logs = recent_logs($pdo);
+
 if (too_many_attempts($logs, $id, $_SERVER['REMOTE_ADDR'] ?? '')) {
   json_response(['success'=>false,'message'=>'Demasiados intentos. Probá en unos minutos.'], 429);
 }
