@@ -6,11 +6,11 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 ---
 
 ## Entregables solicitados por la cátedra
-- Prototipo de pantallas.  
+- Prototipo de pantallas (`mockup/`).  
 - Código fuente completo (PHP, HTML, CSS, JS).  
 - Script SQL con la estructura y datos de la base (`src/Model/db.sql`).  
 - Archivo README con instrucciones de uso (este documento).  
-- Video en formato MP4 con el _elevator pitch_ del producto seleccionado. (`video/Video Elevator Pitch.mp4`).  
+- Video en formato MP4 con el _elevator pitch_ del producto seleccionado (`video/Video Elevator Pitch.mp4`).  
 
 ---
 
@@ -25,42 +25,41 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 ---
 
 ## Requisitos previos
-- PHP 8.1 o superior (CLI o servidor embebido).  
-- Servidor MySQL/MariaDB (por ejemplo XAMPP o Docker).  
-- Extensión PDO MySQL habilitada.  
-- Navegador moderno (Chrome, Firefox, Edge) para interactuar con la interfaz.  
-
-> Opcionalmente, contar con un entorno LAMP/WAMP ya configurado facilita el despliegue.
+- Tener instalado **XAMPP** con Apache y MySQL activos.  
+- PHP incluido en XAMPP (no requiere instalación adicional).  
+- Navegador moderno (Chrome, Edge, Firefox, etc.) para acceder a la interfaz.  
 
 ---
 
 ## Configuración y puesta en marcha
 1. **Obtener el código**
-   - Usar la carpeta entregada junto con el TP (archivo `.zip` o copia física).
-   - Descomprimirla y abrirla en tu entorno de preferencia.
-
-2. **Crear la base de datos**
-   - Abrir MySQL y crear una base (por ejemplo `db2`).
-   - Importar el script `src/Model/db.sql` desde phpMyAdmin o la CLI:
-     ```bash
-     mysql -u root -p db2 < src/Model/db.sql
+   - Usar la carpeta entregada junto con el TP (archivo `.zip`).
+   - Descomprimirla y abrirla dentro de la carpeta `htdocs` de XAMPP, por ejemplo:  
      ```
-   - El script crea las tablas `users` y `logs` e inserta usuarios de ejemplo.
-
-3. **Configurar la conexión**
-   - Editar `src/Model/conexion.php` con el nombre de base, usuario, contraseña y puerto de tu entorno.
-
-4. **Levantar el servidor PHP**
-   - Desde la carpeta `src` ejecutar:
-     ```bash
-     php -S localhost:8000
+     C:\xampp\htdocs\grupo18-login-system
      ```
-   - O copiar el directorio `src/` dentro de `htdocs` de XAMPP y acceder mediante  
-     `http://localhost/src/View/login.html`.
+
+2. **Iniciar XAMPP**
+   - Abrir el panel de control de XAMPP.
+   - Encender los módulos **Apache** y **MySQL**.
+
+3. **Crear la base de datos**
+   - Entrar a phpMyAdmin desde [http://localhost/phpmyadmin](http://localhost/phpmyadmin).  
+   - Crear una nueva base (por ejemplo `db`).
+   - Importar el script `src/Model/db.sql` (se encuentra dentro del proyecto).  
+   - Este script crea las tablas `users` y `logs` e inserta usuarios de ejemplo.
+
+4. **Configurar la conexión**
+   - Editar el archivo `src/Model/conexion.php` con los datos de conexión correctos (nombre de base, usuario, contraseña y puerto, si aplica).
 
 5. **Acceder a la aplicación**
-   - Abrir `http://localhost:8000/View/login.html` en el navegador.
+   - Con Apache y MySQL encendidos, abrir en el navegador:  
+     ```
+     http://localhost/grupo18-login-system/src/View/login.html
+     ```
    - Probar con los usuarios precargados o registrar uno nuevo.
+
+---
 
 ### Credenciales de ejemplo
 - **Administrador:** `id = 29127`, contraseña `Luna-2015!`  
@@ -70,6 +69,5 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 > Se recomienda cambiar estas claves en un entorno real y mantenerlas solo para demostración.
 
 ---
-
 
 ## Estructura del proyecto
