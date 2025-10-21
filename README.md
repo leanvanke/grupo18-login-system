@@ -6,7 +6,7 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 ---
 
 ## Entregables solicitados por la cátedra
-- Prototipo de pantallas (`mockup/`).  
+- Prototipo de pantallas (`docs\Mockup.png`).  
 - Código fuente completo (PHP, HTML, CSS, JS).  
 - Script SQL con la estructura y datos de la base (`src/Model/db.sql`).  
 - Archivo README con instrucciones de uso (este documento).  
@@ -69,4 +69,5 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 > Se recomienda cambiar estas claves en un entorno real y mantenerlas solo para demostración.
 
 ---
+
 
