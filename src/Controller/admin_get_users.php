@@ -18,12 +18,10 @@ require __DIR__ . '/../Model/conexion.php';
 
 try {
   // === Usuarios ===
-  // Ajustá ORDER BY si no tenés created_at
   $stmtUsers = $pdo->query("SELECT id, email, role, active FROM users ORDER BY id ASC");
   $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-  // === Logs (con tu esquema: logs.id == users.id) ===
-  // Traemos todos y agrupamos en PHP (podes limitar si son muchos)
+  // === Logs ===
   $stmtLogs = $pdo->query("SELECT id, ts, result FROM logs ORDER BY ts DESC");
   $allLogs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
@@ -38,7 +36,7 @@ try {
     ];
   }
 
-  // Salida en el formato que espera tu dashboard.js
+  // Salida en el formato que espera dashboard.js
   $out = [];
   foreach ($users as $u) {
     $uid = (string)$u['id'];

@@ -5,8 +5,7 @@ require __DIR__ . '/logs.php';
 
 function ensure_password_column_capacity(PDO $pdo, int $expectedLength): void
 {
-  $minLength = max($expectedLength, 72); // bcrypt usa 60, dejamos margen
-
+  $minLength = max($expectedLength, 72); 
   try {
     $dbStmt = $pdo->query('SELECT DATABASE() AS db');
     $schema = (string)($dbStmt->fetchColumn() ?? '');
@@ -33,7 +32,7 @@ function ensure_password_column_capacity(PDO $pdo, int $expectedLength): void
       $pdo->exec('ALTER TABLE `users` MODIFY `password` VARCHAR(255) NOT NULL');
     }
   } catch (Throwable $e) {
-    // Silencioso: si falla, continuamos con la validación posterior
+    // No hacer nada si falla
   }
 }
 

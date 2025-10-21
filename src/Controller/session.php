@@ -1,9 +1,7 @@
 <?php
-// session.php
 
 if (!function_exists('start_session')) {
   function start_session() {
-    // Sesión endurecida
     if (session_status() === PHP_SESSION_NONE) {
       session_set_cookie_params([
         'lifetime' => 0,
@@ -20,7 +18,6 @@ if (!function_exists('start_session')) {
 if (!function_exists('json_response')) {
   function json_response($arr, $code = 200) {
     http_response_code($code);
-    // Intentamos limpiar cualquier salida previa para evitar HTML basura
     if (function_exists('ob_get_length') && ob_get_length()) {
       @ob_clean();
     }

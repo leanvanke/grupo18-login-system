@@ -16,10 +16,6 @@ function too_many_attempts($logs, $id, $ip) {
 
 start_session();
 
-// Json de logs, momentáneo (se mantiene); usuarios ahora vienen de la BD
-$logsFile  = "../Model/logs.json";
-$logs  = json_decode(@file_get_contents($logsFile), true) ?: [];
-
 // Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   json_response(['success' => false, 'message' => 'Método no permitido'], 405);
@@ -36,13 +32,12 @@ if (too_many_attempts($logs, $id, $_SERVER['REMOTE_ADDR'] ?? '')) {
   json_response(['success'=>false,'message'=>'Demasiados intentos. Probá en unos minutos.'], 429);
 }
 
-// ====== CAMBIO: buscar usuario por ID en la BD (en lugar de users.json) ======
+// ====== Buscar usuario por ID en la BD ======
 try {
   $stmt = $pdo->prepare("SELECT id, name, email, password, role, birth_date, active FROM users WHERE id = :id LIMIT 1");
   $stmt->execute([':id' => $id]);
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {
-  // Error de servidor al consultar usuario
   json_response(['success' => false, 'message' => 'Error de servidor al consultar usuario.'], 500);
 }
 
@@ -52,7 +47,7 @@ if (!$user) {
   json_response(['success' => false, 'message' => 'Usuario no encontrado.'], 401);
 }
 
-// ====== CAMBIO: interpretar 'active' desde la BD (1=activo, otro= bloqueado) ======
+// ====== (1=activo, otro= bloqueado) ======
 $isActive = (int)($user['active'] ?? 0) === 1;
 
 // Si el usuario existe y NO está activo => está bloqueado (misma semántica que antes)

@@ -4,15 +4,6 @@ require __DIR__ . '/../Model/conexion.php';
 require __DIR__ . '/logs.php';
 start_session();
 
-/* Helper JSON si no existe */
-if (!function_exists('json_response')) {
-  function json_response(array $payload, int $status = 200): void {
-    http_response_code($status);
-    echo json_encode($payload, JSON_UNESCAPED_UNICODE);
-    exit;
-  }
-}
-
 /* Solo POST */
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
   json_response(['success' => false, 'message' => 'Método no permitido'], 405);
@@ -24,7 +15,7 @@ $email    = trim($_POST['email'] ?? '');
 $password = (string)($_POST['password'] ?? '');
 $role     = (string)($_POST['role'] ?? 'usuario');
 
-/* Validaciones simples (mismas que tenías) */
+/* Validaciones simples */
 if ($id === '' || $email === '' || $password === '' || $role === '') {
   json_response(['success' => false, 'message' => 'Completa todos los campos.'], 400);
 }
@@ -36,7 +27,7 @@ if (!(strlen($password) >= 8 && preg_match('/[A-Z]/', $password) && preg_match('
   json_response(['success' => false, 'message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.'], 400);
 }
 
-/* Duplicados en BD (equivalente a tu loop en JSON) */
+/* Duplicados en BD */
 try {
   // Chequear ID
   $stmt = $pdo->prepare("SELECT 1 FROM users WHERE id = :id LIMIT 1");
@@ -79,10 +70,7 @@ try {
   ]);
 
 } catch (PDOException $e) {
-  // Si tenés UNIQUE en BD y cae aquí por duplicados
-  // Podés mapear el código 1062 (MySQL) a 409:
   if ((int)$e->errorInfo[1] === 1062) {
-    // Determinar por qué campo (si querés afinar):
     $msg = (stripos($e->getMessage(), 'for key \'PRIMARY\'') !== false || stripos($e->getMessage(), 'for key \'users.PRIMARY\'') !== false)
       ? 'El ID ya existe.'
       : 'El email ya está registrado.';

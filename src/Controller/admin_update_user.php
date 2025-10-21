@@ -2,7 +2,7 @@
 // src/Controller/admin_update_user.php
 declare(strict_types=1);
 
-// === Forzar JSON y capturar errores/warnings como JSON ===
+// ===  errores/warnings JSON ===
 ob_start();
 header('Content-Type: application/json; charset=utf-8');
 ini_set('display_errors', '0');
