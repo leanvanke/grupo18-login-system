@@ -27,7 +27,7 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 ## Requisitos previos
 - Tener instalado **XAMPP** con Apache y MySQL activos.  
 - PHP incluido en XAMPP (no requiere instalación adicional).  
-- Navegador moderno (Chrome, Edge, Firefox, etc.) para acceder a la interfaz.  
+- Navegador (Chrome, Edge, Firefox, etc.) para acceder a la interfaz.  
 
 ---
 
@@ -55,19 +55,18 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 5. **Acceder a la aplicación**
    - Con Apache y MySQL encendidos, abrir en el navegador:  
      ```
-     http://localhost/grupo18-login-system/src/View/login.html
+     http://localhost/grupo18-login-system/src/main.php
      ```
    - Probar con los usuarios precargados o registrar uno nuevo.
 
 ---
 
 ### Credenciales de ejemplo
-- **Administrador:** `id = 29127`, contraseña `Luna-2015!`  
-- **Usuario bloqueado:** `id = 29`, contraseña `Luna-2015!`  
-- **Usuario activo:** `id = 1213`, contraseña `Luna-2015!`  
+- **Administrador:** `id = 1`, contraseña `Contraseña123!`  
+- **Usuario bloqueado:** `id = 2`, contraseña `Contraseña123!`  
+- **Usuario activo:** `id = 3`, contraseña `Contraseña123!`  
 
 > Se recomienda cambiar estas claves en un entorno real y mantenerlas solo para demostración.
 
 ---
 
-## Estructura del proyecto
