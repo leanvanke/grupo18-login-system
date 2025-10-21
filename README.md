@@ -1,19 +1,16 @@
 # Sistema de Login - Grupo 18 (UNSO)
 
-Aplicación web desarrollada para el Trabajo Práctico de **Programación de Sistemas** (Tecnicatura en Ciberseguridad, UNSO).  
+Aplicación desarrollada para el Trabajo Práctico de **Programación de Sistemas** (Tecnicatura en Ciberseguridad, UNSO).  
 El objetivo es demostrar un flujo completo de autenticación con registro de usuarios, administración y persistencia en base de datos.
 
 ---
 
 ## Entregables solicitados por la cátedra
-- Wireframe / prototipo de pantallas.  
+- Prototipo de pantallas.  
 - Código fuente completo (PHP, HTML, CSS, JS).  
 - Script SQL con la estructura y datos de la base (`src/Model/db.sql`).  
 - Archivo README con instrucciones de uso (este documento).  
-- Video en formato MP4 con el _elevator pitch_ del producto seleccionado.
-
-> **Nota:** este repositorio incluye todo el código y el script SQL.  
-> El wireframe y el video deben adjuntarse en el Campus Virtual según las indicaciones del docente.
+- Video en formato MP4 con el _elevator pitch_ del producto seleccionado. (`video/Video Elevator Pitch.mp4`).  
 
 ---
 
@@ -73,5 +70,6 @@ El objetivo es demostrar un flujo completo de autenticación con registro de usu
 > Se recomienda cambiar estas claves en un entorno real y mantenerlas solo para demostración.
 
 ---
+
 
 ## Estructura del proyecto
