@@ -62,7 +62,7 @@ async function loadSession() {
       banner.textContent = "Sesión válida.";
     }
 
-    // Footer (opcional)
+    // Footer 
     setText("foot-role", data.role ? `Rol: ${data.role}` : "");
   } catch (err) {
     // Falla de verificación → login
@@ -70,7 +70,7 @@ async function loadSession() {
   }
 }
 
-/* ----------------- helpers ----------------- */
+
 function byId(id) { return document.getElementById(id); }
 function setText(id, txt) {
   const el = byId(id);
@@ -233,7 +233,7 @@ function setupEditProfile() {
     setEditing(false);
   });
 }
-/* init */
+
 document.addEventListener("DOMContentLoaded", () => {
   loadSession();
   setupEditProfile();
