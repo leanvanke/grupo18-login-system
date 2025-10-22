@@ -52,13 +52,11 @@ if (!$user) {
 // ====== (1=activo, otro= bloqueado) ======
 $isActive = (int)($user['active'] ?? 0) === 1;
 
-// Si el usuario existe y NO está activo => está bloqueado (misma semántica que antes)
 if (!$isActive) {
   add_log($pdo, $id, 'user_blocked');
   json_response(['success' => false, 'message' => 'Usuario bloqueado.'], 423);
 }
 
-// Comparación simple (soporta hash y texto plano para compatibilidad)
 $storedPass = (string)($user['password'] ?? '');
 $hasHash = password_get_info($storedPass)['algo'] !== 0;
 $valid = $hasHash ? password_verify($password, $storedPass) : ($storedPass === $password);
@@ -68,7 +66,6 @@ if (!$valid) {
   json_response(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
 }
 
-// OK: crear sesión (igual que antes)
 $_SESSION['user'] = [
   'id'         => $user['id'],
   'name'       => $user['name'] ?? null,
@@ -81,7 +78,6 @@ session_regenerate_id(true);
 
 add_log($pdo, $id, 'login success');
 
-// El front espera role;
 json_response([
   'success' => true,
   'message' => 'Login OK',

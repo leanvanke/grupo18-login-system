@@ -1,5 +1,4 @@
 <?php
-// src/Controller/admin_update_user.php
 declare(strict_types=1);
 
 // ===  errores/warnings JSON ===
@@ -26,7 +25,6 @@ require __DIR__ . '/session.php';
 start_session();
 
 
-// --- Guard admin ---
 if (empty($_SESSION['user']) || (($_SESSION['user']['role'] ?? 'usuario') !== 'administrador')) {
   json_response(['success'=>false,'message'=>'No autorizado'], 403);
 }
