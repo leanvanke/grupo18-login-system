@@ -2,7 +2,8 @@
 
 Aplicación desarrollada para el Trabajo Práctico de **Programación de Sistemas** (Tecnicatura en Ciberseguridad, UNSO).  
 El objetivo es demostrar un flujo completo de autenticación con registro de usuarios, administración y persistencia en base de datos.
-https://trello.com/b/Bv19aPgz/00318-programaci%C3%B3n-de-sistemas
+
+**Tablero de Trello:** [00318 - Programación de Sistemas](https://trello.com/b/Bv19aPgz/00318-programaci%C3%B3n-de-sistemas)
 
 ---
 
@@ -72,3 +73,28 @@ https://trello.com/b/Bv19aPgz/00318-programaci%C3%B3n-de-sistemas
 ---
 
 
+## Evaluación de la cátedra
+
+**Estado:** ✅ Aprobado
+
+### Fortalezas
+
+- Flujo completo con registro, login, auditoría de eventos y panel de administración.
+- Buen piso de seguridad: hashing de contraseñas, prepared statements, control de sesión con flags de cookie y `session_regenerate_id(true)` post-login.
+- Estructura clara (controladores/JS por pantalla) y logs centralizados (`logs.php`).
+
+### Debilidades
+
+- CSRF ausente en todos los POST (login/registro/cambios/admin).
+- Semillas en texto plano en `db.sql` + login tolera texto plano (reduce el estándar).
+- Dos líneas truncadas reales en `register.php` (26 y 74) que pueden romper validaciones/mensajes.
+- Validación de entradas perfectible (normalización y límites de longitud en todos los POST).
+
+### Áreas de mejora (prioridad alta → media)
+
+1. **CSRF end-to-end**
+   - Generar `$_SESSION['csrf_token']` y enviarlo en todas las peticiones POST; verificarlo con `hash_equals` en los controladores.
+2. **Validación en servidor**
+   - `trim` y límites de longitud a todos los campos; tipar/normalizar `id`/fechas.
+3. **Hardening adicional**
+   - Cabeceras de seguridad (p. ej., `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`) y CSP mínima si empiezan a interpolar HTML.
