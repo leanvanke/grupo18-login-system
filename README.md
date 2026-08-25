@@ -2,6 +2,7 @@
 
 Aplicación desarrollada para el Trabajo Práctico de **Programación de Sistemas** (Tecnicatura en Ciberseguridad, UNSO).  
 El objetivo es demostrar un flujo completo de autenticación con registro de usuarios, administración y persistencia en base de datos.
+https://trello.com/b/Bv19aPgz/00318-programaci%C3%B3n-de-sistemas
 
 ---
 
